@@ -37,8 +37,7 @@ export function conferirAutor({ responsavel, justificativa }, anterior) {
 
 // RF04 — fora da faixa ou sem aprovação: Bloqueado; dentro da faixa e aprovada: Apto
 export function atualizarStatus(eq, ultima) {
-    // DEFEITO CONTROLADO D02 (lógica): a condição "!ultima.aprovada" foi removida — libera sem aprovação
-    if (!ultima || ultima.classificacao === "Bloqueado") eq.status = "Bloqueado";
+    if (!ultima || ultima.classificacao === "Bloqueado" || !ultima.aprovada) eq.status = "Bloqueado";
     else eq.status = "Apto";
 }
 
