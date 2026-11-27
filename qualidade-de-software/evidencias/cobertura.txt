@@ -1,0 +1,18 @@
+﻿Comando: cd backend && npm run test:coverage
+Data: 2026-11-27
+Ferramenta: node --test --experimental-test-coverage
+
+  file       | line % | branch % | funcs % | linhas não exercitadas
+  dominio.js |  91.06 |    70.00 |  100.00 | 110-111, 138-139, 199, 203-218
+  regras.js  | 100.00 |    89.29 |  100.00 |
+  all files  |  92.63 |    76.14 |  100.00 |
+
+Interpretação:
+- regras.js (classificação, medição, justificativa, status) foi 100% em linhas.
+- O que ficou de fora em dominio.js:
+  - mensagens "nenhuma alteração informada" (linhas 110-111 e 138-139)
+  - histórico inexistente (199)
+  - popularExemplo usado só pelo server.js, não pelos testes (203-218)
+- Cobertura alta não prova ausência de defeitos: D01 só aparece nos extremos
+  10.00 e 20.00; sem CT02/CT03 a cobertura ainda poderia ser alta e o defeito
+  escaparia.

@@ -1,0 +1,12 @@
+﻿Comando: cd backend && npm test
+Data: 2026-11-27
+Versão: regras corretas (classificar com extremos inclusos; desbloqueio só com aprovação)
+
+Resultado: 26 testes, 4 suítes, 26 aprovados, 0 falhas.
+
+Cobertura da automação exigida pela Etapa 2:
+- Caso de limite: CT02 (10.00) e CT03 (20.00)
+- Caso inválido: CT14 (ID EQ-1042) e CT15 (medição "abc")
+- Demais casos CT01 a CT13
+
+Arquivos: testes/caixa-preta.test.js, caixa-branca.test.js, niveis.test.js, tdd-classificar.test.js

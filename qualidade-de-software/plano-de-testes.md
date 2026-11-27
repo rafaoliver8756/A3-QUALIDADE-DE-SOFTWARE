@@ -56,6 +56,17 @@ IF(medicao BETWEEN 10.00 AND 20.00, 'Apto', 'Bloqueado')
 | Sistema | CT13 + CT05 + CT06 + CT11 | Fluxo completo: cadastrar equipamento → inspecionar → aprovar → tentar excluir |
 | Aceitação | CT06 | Critério do usuário: equipamento bloqueado volta a Apto após inspeção aprovada dentro da faixa |
 
+## 5.1 Resultado da execução (2026-11-27)
+
+Suíte Node: `cd backend && npm test` → **26/26 OK** na versão correta.
+
+| ID | Resultado obtido | Evidência |
+|---|---|---|
+| CT01 a CT06, CT08 a CT15 | Conforme o esperado | `evidencias/testes-aprovados.txt` |
+| CT07 | Falhou na 1ª execução (D03); passou após correção de `atualizarStatus` | `evidencias/defeito-d03-reteste.txt` |
+
+Com D01 ativo, CT02 e CT03 falham (`evidencias/testes-falha-d01.txt`).
+
 ## 6. Defeitos controlados (inseridos em versão separada)
 
 | ID | Tipo | Alteração | Requisito afetado |
@@ -63,15 +74,18 @@ IF(medicao BETWEEN 10.00 AND 20.00, 'Apto', 'Bloqueado')
 | D01 | Defeito de limite | Substituir `BETWEEN 10.00 AND 20.00` por `BETWEEN 10.01 AND 19.99` — exclui os extremos da faixa | RF03 |
 | D02 | Defeito de lógica | Remover a condição `AND NEW.aprovada = 1` no trigger `trg_insp_au` — equipamento passa a Apto sem aprovação | RF04 |
 
-Os defeitos devem ser inseridos em um branch separado (`defeitos-controlados`). A versão correta é preservada na branch principal. A suíte de testes `sql/06-testes-regras.sql` deve detectar ambos.
+Os defeitos D01 e D02 são inseridos temporariamente em `backend/regras.js` (não na branch principal). A versão correta é a que está no repositório. A suíte `backend` (`npm test`) detecta ambos. A suíte SQL `sql/06-testes-regras.sql` cobre as mesmas regras no MySQL.
+
+D01: em `classificar`, trocar `>=` / `<=` por `>` / `<`.  
+D02: em `atualizarStatus`, liberar para Apto sem exigir `ultima.aprovada`.
 
 ## 7. Estratégia de execução
 
-1. Executar os scripts na ordem definida em `docs/modelo-relacional.md`.
-2. Executar `sql/06-testes-regras.sql` — todos os casos devem retornar `OK`.
-3. Aplicar D01, executar novamente — CT02 e CT03 devem retornar `FALHOU`.
-4. Aplicar D02, executar novamente — CT05 deve retornar `FALHOU`.
-5. Reverter para a versão correta e executar regressão completa.
+1. `cd backend && npm test` — todos os casos devem passar.
+2. Aplicar D01, executar novamente — CT02 e CT03 falham.
+3. Restaurar a versão correta (ou aplicar só D02) — CT05 falha com D02.
+4. Restaurar a versão correta e executar regressão completa (`npm test`).
+5. Opcional: scripts MySQL na ordem de `docs/modelo-relacional.md` e `sql/06-testes-regras.sql`.
 
 ## 8. Rastreabilidade resumida
 
