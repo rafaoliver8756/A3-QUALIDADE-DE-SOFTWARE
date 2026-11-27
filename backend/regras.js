@@ -9,8 +9,9 @@ export class ErroNegocio extends Error {
 }
 
 // RF03 — faixa didática 10.00 a 20.00, inclusive
+// DEFEITO CONTROLADO D01 (limite): ">" e "<" excluem os extremos 10.00 e 20.00
 export function classificar(medicao) {
-    return medicao >= 10 && medicao <= 20 ? "Apto" : "Bloqueado";
+    return medicao > 10 && medicao < 20 ? "Apto" : "Bloqueado";
 }
 
 // RF02 — medição numérica (aceita vírgula)
