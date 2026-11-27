@@ -1,37 +1,65 @@
+import { useState } from "react";
 import { formatarData, formatarMedicao } from "../services/formatar";
 
 const sim = (valor) => (valor ? "sim" : "não");
 
 export function TabelaInspecoes({ inspecoes, aoAprovar, aoCorrigir }) {
+    const [verTodas, setVerTodas] = useState(false);
+
     if (inspecoes.length === 0) return <p className="nota">Nenhuma inspeção registrada.</p>;
 
+    // mostra sempre a última; as anteriores ficam recolhidas
+    const ultima = inspecoes[inspecoes.length - 1];
+    const anteriores = inspecoes.slice(0, -1);
+    const visiveis = verTodas ? inspecoes : [ultima];
+
+    function linhaInspecao(i) {
+        return (
+            <tr key={i.id}>
+                <td>{i.id}</td>
+                <td>{formatarMedicao(i.medicao)}</td>
+                <td><span className={`status ${i.classificacao}`}>{i.classificacao}</span></td>
+                <td>{sim(i.aprovada)}</td>
+                <td>{i.responsavel}</td>
+                <td>{i.versaoFirmware} / {i.versaoSoftware}</td>
+                <td>{formatarData(i.dataHora)}</td>
+                <td>
+                    <div className="botoes-acao">
+                        {!i.aprovada && (
+                            <button className="btn-aprovar" onClick={() => aoAprovar(i)}>Aprovar</button>
+                        )}
+                        <button className="btn-corrigir secundario" onClick={() => aoCorrigir(i)}>Corrigir</button>
+                    </div>
+                </td>
+            </tr>
+        );
+    }
+
     return (
-        <div className="tabela">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th><th>Medição</th><th>Resultado</th><th>Aprovada</th>
-                        <th>Responsável</th><th>Firmware / Software</th><th>Data</th><th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {inspecoes.map((i) => (
-                        <tr key={i.id}>
-                            <td>{i.id}</td>
-                            <td>{formatarMedicao(i.medicao)}</td>
-                            <td><span className={`status ${i.classificacao}`}>{i.classificacao}</span></td>
-                            <td>{sim(i.aprovada)}</td>
-                            <td>{i.responsavel}</td>
-                            <td>{i.versaoFirmware} / {i.versaoSoftware}</td>
-                            <td>{formatarData(i.dataHora)}</td>
-                            <td>
-                                {!i.aprovada && <button onClick={() => aoAprovar(i)}>Aprovar</button>}
-                                <button onClick={() => aoCorrigir(i)}>Corrigir</button>
-                            </td>
+        <div>
+            <div className="tabela">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th><th>Medição</th><th>Resultado</th><th>Aprovada</th>
+                            <th>Responsável</th><th>Firmware / Software</th><th>Data</th><th></th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {visiveis.map(linhaInspecao)}
+                    </tbody>
+                </table>
+            </div>
+            {anteriores.length > 0 && (
+                <button
+                    className="secundario btn-historico"
+                    onClick={() => setVerTodas(!verTodas)}
+                >
+                    {verTodas
+                        ? "▲ Ocultar histórico"
+                        : `▼ Ver histórico (${anteriores.length} inspeção${anteriores.length > 1 ? "ões" : ""} anterior${anteriores.length > 1 ? "es" : ""})`}
+                </button>
+            )}
         </div>
     );
 }

@@ -54,7 +54,7 @@ export default function App() {
                 <div>
                     {cadastrando && <EquipamentoForm aoCadastrar={aoCadastrar} aoCancelar={() => setCadastrando(false)} />}
                     {!cadastrando && selecionado && <EquipamentoDetalhe key={selecionado} id={selecionado} aoMudar={carregar} />}
-                    {!cadastrando && !selecionado && <p className="vazio">Selecione um equipamento ou cadastre um novo.</p>}
+                    {!cadastrando && !selecionado && <p className="vazio">Selecione um equipamento na lista ou clique em <strong>+ Novo equipamento</strong> para cadastrar.</p>}
                 </div>
             </main>
         </div>

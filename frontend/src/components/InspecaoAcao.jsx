@@ -27,7 +27,13 @@ export default function InspecaoAcao({ tipo, inspecao, aoSalvar, aoFechar }) {
             const resultado = corrigir
                 ? await corrigirInspecao(inspecao.id, { ...autor, medicao: form.medicao, observacao: form.observacao.trim() || null })
                 : await aprovarInspecao(inspecao.id, autor);
-            aoSalvar(`Inspeção #${inspecao.id} ${corrigir ? "corrigida" : "aprovada"}. Status: ${resultado.equipamento.status}.`);
+            const status = resultado.equipamento.status;
+            const msg = corrigir
+                ? `Inspeção #${inspecao.id} corrigida. Equipamento ${status}.`
+                : status === "Apto"
+                    ? `Inspeção #${inspecao.id} aprovada. Equipamento liberado como Apto.`
+                    : `Inspeção #${inspecao.id} aprovada, mas medição fora da faixa. Equipamento continua Bloqueado.`;
+            aoSalvar(msg, status);
         } catch (err) {
             setErro(err.message);
         }
