@@ -26,6 +26,14 @@ export function validarIdEquipamento(id) {
     if (!/^EQP-\d{3}$/.test(id ?? "")) throw new ErroNegocio(400, "O ID deve seguir o formato EQP-001.");
 }
 
+// RF01 — versões de firmware e software obrigatórias
+export function validarVersoes(firmware, software) {
+    if (!firmware || !firmware.trim() || !software || !software.trim()) {
+        throw new ErroNegocio(400, "As versões são obrigatórias.");
+    }
+    return { firmware: firmware.trim(), software: software.trim() };
+}
+
 // RF05 — responsável e justificativa (mín. 10 caracteres e diferente da anterior)
 export function conferirAutor({ responsavel, justificativa }, anterior) {
     if (!responsavel?.trim()) throw new ErroNegocio(400, "O responsável é obrigatório.");
