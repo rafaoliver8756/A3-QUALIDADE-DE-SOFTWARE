@@ -60,6 +60,19 @@ describe("Caixa-preta — valores-limite e partições (CT01 a CT15)", () => {
         assert.equal(equipamento.status, "Bloqueado");
     });
 
+    it("CT07b RF04: corrigir inspeção antiga não altera o status definido pela última", () => {
+        const s = sistemaVazio();
+        cadastrarPadrao(s, "EQP-107");
+        const { inspecao: antiga } = s.registrarInspecao("EQP-107", { medicao: 15, aprovada: true, responsavel: "QA" });
+        s.registrarInspecao("EQP-107", { medicao: 25, responsavel: "QA" });
+        const { equipamento } = s.corrigirInspecao(antiga.id, {
+            observacao: "Nota corrigida",
+            responsavel: "QA",
+            justificativa: "Correção de observação antiga",
+        });
+        assert.equal(equipamento.status, "Bloqueado");
+    });
+
     it("CT08 RF05: alterar versão sem responsável é rejeitado", () => {
         const s = sistemaVazio();
         cadastrarPadrao(s, "EQP-104");

@@ -127,7 +127,8 @@ export function criarSistema({ popularExemplo: popular = false } = {}) {
             ordem: ++ordem,
         });
         Object.assign(insp, { medicao, aprovada, observacao, classificacao: classificar(medicao) });
-        atualizarStatus(eq, insp);
+        const ultima = inspecoes.filter((i) => i.idEquipamento === eq.idEquipamento).at(-1);
+        if (ultima === insp) atualizarStatus(eq, insp);
         return { inspecao: insp, equipamento: resumo(eq) };
     }
 
