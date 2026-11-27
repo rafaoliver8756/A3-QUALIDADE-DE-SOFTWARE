@@ -58,7 +58,7 @@ IF(medicao BETWEEN 10.00 AND 20.00, 'Apto', 'Bloqueado')
 
 ## 5.1 Resultado da execução (2026-11-27)
 
-Suíte Node: `cd backend && npm test` → **26/26 OK** na versão correta.
+Suíte Node: `cd backend && npm test` → **todos os testes OK** na versão correta (ver CI).
 
 | ID | Resultado obtido | Evidência |
 |---|---|---|
@@ -71,10 +71,10 @@ Com D01 ativo, CT02 e CT03 falham (`evidencias/testes-falha-d01.txt`).
 
 | ID | Tipo | Alteração | Requisito afetado |
 |---|---|---|---|
-| D01 | Defeito de limite | Substituir `BETWEEN 10.00 AND 20.00` por `BETWEEN 10.01 AND 19.99` — exclui os extremos da faixa | RF03 |
-| D02 | Defeito de lógica | Remover a condição `AND NEW.aprovada = 1` no trigger `trg_insp_au` — equipamento passa a Apto sem aprovação | RF04 |
+| D01 | Defeito de limite | Em `classificar` (`backend/regras.js`), trocar `>=`/`<=` por `>`/`<` — exclui os extremos da faixa | RF03 |
+| D02 | Defeito de lógica | Em `atualizarStatus` (`backend/regras.js`), remover a condição `!ultima.aprovada` — equipamento passa a Apto sem aprovação | RF04 |
 
-Os defeitos D01 e D02 são inseridos temporariamente em `backend/regras.js` (não na branch principal). A versão correta é a que está no repositório. A suíte `backend` (`npm test`) detecta ambos. A suíte SQL `sql/06-testes-regras.sql` cobre as mesmas regras no MySQL.
+Os defeitos D01 e D02 estão na branch separada `defeitos-controlados` (commits `3248f45` e `04fb634`), não na branch principal. A versão correta é a que está no repositório. A suíte `backend` (`npm test`) detecta ambos. A suíte SQL `sql/06-testes-regras.sql` cobre as mesmas regras no MySQL.
 
 D01: em `classificar`, trocar `>=` / `<=` por `>` / `<`.  
 D02: em `atualizarStatus`, liberar para Apto sem exigir `ultima.aprovada`.

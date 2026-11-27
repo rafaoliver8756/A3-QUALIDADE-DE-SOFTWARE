@@ -2,7 +2,7 @@
 
 ## 1. Objetivo
 
-Demonstrar que a suíte de testes (`sql/06-testes-regras.sql`) é capaz de detectar defeitos reais introduzidos propositalmente no código. Dois defeitos foram inseridos em uma versão separada do backend (`server.js`) e do banco (`sql/02-create-tables.sql`), testados, e depois corrigidos. A versão correta é preservada na branch principal.
+Demonstrar que a suíte de testes (`sql/06-testes-regras.sql`) é capaz de detectar defeitos reais introduzidos propositalmente no código. Dois defeitos foram inseridos em uma versão separada do backend (branch `defeitos-controlados`, arquivo `backend/regras.js`), testados pelo CI, e depois corrigidos. A versão correta é preservada na branch principal.
 
 ---
 
@@ -62,6 +62,8 @@ export function atualizarStatus(eq, ultima) {
 
 ## 3. TDD aplicado — regra de classificação (RF03)
 
+> As três fases de TDD registradas em commits separados (com CI) usam a regra `validarVersoes` (RF01). Ver `relatorio-2.md`, seção 6.
+
 TDD (Test-Driven Development): escrever o teste antes do código, observar a falha, implementar, observar o sucesso.
 
 ### Fase 1 — Teste escrito, código ainda não implementado (vermelho)
@@ -91,7 +93,7 @@ Todos os 5 testes passam.
 
 A função já está simples o suficiente. Nenhuma refatoração necessária. Os testes continuam passando.
 
-**Evidência:** `backend/testes/tdd-classificar.test.js` e a execução `npm test`. Com D01 ativo, os testes de 10.00 e 20.00 falham (`qualidade-de-software/evidencias/testes-falha-d01.txt`). Na versão correta, os 26 testes passam.
+**Evidência:** `backend/testes/tdd-classificar.test.js` e a execução `npm test`. Com D01 ativo, os testes de 10.00 e 20.00 falham (`qualidade-de-software/evidencias/testes-falha-d01.txt`). Na versão correta, todos os testes passam.
 
 A suíte SQL `sql/06-testes-regras.sql` contém os mesmos casos de borda no MySQL.
 

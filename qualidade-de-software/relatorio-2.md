@@ -75,21 +75,31 @@ Os quatro níveis reutilizam o fluxo de inspeção; o objetivo de cada um está 
 | D02 | Lógica | Inserido de propósito (liberar sem `aprovada`) | RF04 | Sim, CT05 | Removido; versão correta preservada |
 | D03 | Lógica | Encontrado pela suíte na 1ª execução | RF04 | Sim, CT07 | Corrigido em `atualizarStatus`; reteste e regressão OK |
 
-D01 e D02: descrição em `qualidade-de-software/defeitos-controlados.md`. Execução com D01: `evidencias/testes-falha-d01.txt` (19 passaram, 7 falharam — só extremos).
+D01 e D02 ficam em uma **versão separada**, a branch [`defeitos-controlados`](https://github.com/rafaoliver8756/A3-QUALIDADE-DE-SOFTWARE/commits/defeitos-controlados); a versão correta é preservada em `main`/`edicao-escopo`. Histórico da branch:
 
-D03: a primeira execução da suíte falhou em CT07 (status permanecia Apto ao revogar aprovação). Correção e regressão: `evidencias/defeito-d03-reteste.txt`. Depois da correção, 26/26.
+| Commit | Conteúdo | CI |
+|---|---|---|
+| `3248f45` | D01 inserido (`>`/`<` em vez de `>=`/`<=`) | [falhou](https://github.com/rafaoliver8756/A3-QUALIDADE-DE-SOFTWARE/actions/runs/45949141970) — 7 falhas, todas nos extremos 10.00/20.00 |
+| `04fb634` | D01 removido, D02 inserido (libera sem `aprovada`) | [falhou](https://github.com/rafaoliver8756/A3-QUALIDADE-DE-SOFTWARE/actions/runs/45949162565) — 4 falhas: CT05, CT07, integração e sistema |
+| `389e67f` | D01 e D02 corrigidos (reteste + regressão) | [aprovado](https://github.com/rafaoliver8756/A3-QUALIDADE-DE-SOFTWARE/actions/runs/45949235415) |
+
+Descrição detalhada em `qualidade-de-software/defeitos-controlados.md`. Execução com D01: `evidencias/testes-falha-d01.txt` (19 passaram, 7 falharam — só extremos).
+
+D03: a primeira execução da suíte falhou em CT07 (status permanecia Apto ao revogar aprovação). Correção e regressão: `evidencias/defeito-d03-reteste.txt`. Depois da correção, todos os testes passaram.
 
 Nenhum dos casos CT01–CT15 ficou sem detecção após a correção. Limitação: os testes Node não exercitam os triggers MySQL; a imutabilidade no banco continua documentada em `sql/06-testes-regras.sql`.
 
 ## 6. TDD
 
-Regra pequena: `classificar` (RF03). Testes em `backend/testes/tdd-classificar.test.js`.
+Regra pequena: `validarVersoes` (RF01 — versões de firmware e software obrigatórias). As três fases estão registradas em commits separados no histórico, cada um com sua execução de CI:
 
-1. **Vermelho:** asserts escritos; sem `classificar` → falha.
-2. **Verde:** `return medicao >= 10 && medicao <= 20 ? "Apto" : "Bloqueado"`.
-3. **Refatoração:** a função já é mínima; testes continuam verdes.
+| Fase | Commit | O que foi feito | CI |
+|---|---|---|---|
+| 1. Vermelho | `0aebfde` | Escrito `testes/tdd-validar-versoes.test.js` antes da função existir | [falhou](https://github.com/rafaoliver8756/A3-QUALIDADE-DE-SOFTWARE/actions/runs/45949244749) (`validarVersoes` não exportada) |
+| 2. Verde | `fca3126` | Implementação mínima de `validarVersoes` em `regras.js` | [aprovado](https://github.com/rafaoliver8756/A3-QUALIDADE-DE-SOFTWARE/actions/runs/45949252744) |
+| 3. Refatoração | `11534cc` | Código simplificado e reutilizado em `cadastrar()` (`dominio.js`) | [aprovado](https://github.com/rafaoliver8756/A3-QUALIDADE-DE-SOFTWARE/actions/runs/45949271365) |
 
-A evidência de falha dos extremos também vale como vermelho quando D01 está ativo (`testes-falha-d01.txt`).
+O arquivo `testes/tdd-classificar.test.js` mantém os testes da regra de classificação (RF03), que também servem de exemplo de teste escrito a partir do critério de aceite.
 
 ## 7. Automação e CI
 
@@ -101,12 +111,13 @@ Três testes relevantes exigidos, cobertos na suíte:
 
 CI: `.github/workflows/ci.yml` — a cada envio, instala Node 22, `npm install` em `backend` e `npm test`. Publicação automática não é feita.
 
-- Execução com falha: D01 → 7 falhas (`evidencias/testes-falha-d01.txt`). No GitHub, o mesmo ocorre se essa alteração for enviada.
-- Execução aprovada: versão correta → 26/26 (`evidencias/testes-aprovados.txt`). Depois do push, o Actions deve repetir esse resultado.
+- Execuções com falha: [D01](https://github.com/rafaoliver8756/A3-QUALIDADE-DE-SOFTWARE/actions/runs/45949141970), [D02](https://github.com/rafaoliver8756/A3-QUALIDADE-DE-SOFTWARE/actions/runs/45949162565) e [TDD vermelho](https://github.com/rafaoliver8756/A3-QUALIDADE-DE-SOFTWARE/actions/runs/45949244749).
+- Execuções aprovadas: [correção dos defeitos](https://github.com/rafaoliver8756/A3-QUALIDADE-DE-SOFTWARE/actions/runs/45949235415) e [TDD refatoração](https://github.com/rafaoliver8756/A3-QUALIDADE-DE-SOFTWARE/actions/runs/45949271365).
+- Lista completa: https://github.com/rafaoliver8756/A3-QUALIDADE-DE-SOFTWARE/actions
 
 ## 8. Cobertura
 
-`npm run test:coverage` → 92,63% linhas, 100% funções. Detalhe em `evidencias/cobertura.txt`.
+`npm run test:coverage` → 92,86% linhas, 77,78% ramos, 100% funções. Detalhe em `evidencias/cobertura.txt`.
 
 O que não foi exercitado: cadastro de exemplo do servidor e algumas mensagens de “nenhuma alteração”. Cobertura alta não substitui CT02/CT03: sem os extremos, D01 poderia passar despercebido.
 
@@ -120,3 +131,17 @@ O que não foi exercitado: cadastro de exemplo do servidor e algumas mensagens d
 | RF04 | Desbloqueio com aprovação | R02 | CT05–CT07 | D02, D03 |
 | RF05 | Responsável e justificativa | R03 | CT08–CT10 | — |
 | RF06 | Histórico imutável | R04 | CT11, CT12 | — |
+
+## 10. Suíte SQL (Banco de Dados)
+
+Os scripts `sql/01` a `sql/06` foram executados em MySQL 8.0. A suíte `sql/06-testes-regras.sql` retornou **30 de 30 testes OK** (saída em `evidencias/mysql-06-testes-regras.txt`). Ela verifica as mesmas regras diretamente nos triggers e restrições do banco, o que os testes Node não cobrem.
+
+## 11. Contribuições dos integrantes
+
+| Integrante | Contribuição na Etapa 2 |
+|---|---|
+| Kauan Gabriel | _preencher_ |
+| Rafaela Oliveira | _preencher_ |
+| Eric Braga | _preencher_ |
+| Thays Durães | _preencher_ |
+| Lucas | _preencher_ |

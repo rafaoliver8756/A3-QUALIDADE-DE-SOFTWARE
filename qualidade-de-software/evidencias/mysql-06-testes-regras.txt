@@ -1,0 +1,36 @@
+Comando: mysql -u root -p < sql/06-testes-regras.sql (após 01 a 05)
+SGBD: MySQL 8.0 · Data: 2026-11-27
+
+requisito	caso	resultado	detalhe
+RF01	ID repetido é rejeitado	OK	Duplicate entry 'EQP-001' for key 'equipamento.PRIMARY'
+RF01	ID fora do formato EQP-NNN é rejeitado	OK	Check constraint 'ck_equip_id' is violated.
+RF01	Firmware vazio é rejeitado	OK	Check constraint 'ck_equip_firmware' is violated.
+RF01	Software ausente (NULL) é rejeitado	OK	Column 'versao_software' cannot be null
+RF02	Medição não numérica é rejeitada	OK	Incorrect decimal value: 'abc' for column 'medicao' at row 1
+RF02	Inspeção de equipamento inexistente é rejeitada	OK	Equipamento não cadastrado: registre o equipamento antes da inspeção.
+RF02	Inspeção sem responsável é rejeitada	OK	Check constraint 'ck_insp_responsavel' is violated.
+RF03	Medição 9.99 classificada como Bloqueado	OK	Obtido: Bloqueado
+RF03	Medição 10.00 classificada como Apto	OK	Obtido: Apto
+RF03	Medição 20.00 classificada como Apto	OK	Obtido: Apto
+RF03	Medição 20.01 classificada como Bloqueado	OK	Obtido: Bloqueado
+RF03	Classificação não pode ser informada pelo usuário	OK	Unknown prepared statement handler (st) given to DEALLOCATE PREPARE
+RF04	Inspeção não pode nascer aprovada (aprovação é etapa separada)	OK	A inspeção é registrada sem aprovação; aprove depois informando responsavel_alteracao e justificativa_alteracao.
+RF04	Inspeção dentro da faixa sem aprovação não libera	OK	Status: Bloqueado
+RF04	Inspeção dentro da faixa e aprovada libera (Apto)	OK	Status: Apto
+RF04	Revogar a aprovação volta a Bloqueado	OK	Status: Bloqueado
+RF04	Inspeção fora da faixa bloqueia	OK	Status: Bloqueado
+RF05	Alterar versão sem responsável é rejeitado	OK	Alteração de versão exige responsavel_alteracao e justificativa_alteracao (mín. 10 caracteres, nova a cada alteração).
+RF05	Alterar versão com justificativa curta é rejeitado	OK	Alteração de versão exige responsavel_alteracao e justificativa_alteracao (mín. 10 caracteres, nova a cada alteração).
+RF05	Repetir a justificativa anterior é rejeitado	OK	Alteração de versão exige responsavel_alteracao e justificativa_alteracao (mín. 10 caracteres, nova a cada alteração).
+RF05	Corrigir medição sem justificativa é rejeitado	OK	Alteração de inspeção exige responsavel_alteracao e justificativa_alteracao (mín. 10 caracteres, nova a cada alteração).
+RF05	Alterar o responsável original da inspeção é rejeitado	OK	Somente medicao, aprovada e observacao podem ser alteradas em uma inspecao.
+RF06	Alterar versões gravadas na inspeção é rejeitado	OK	Somente medicao, aprovada e observacao podem ser alteradas em uma inspecao.
+RF06	Excluir equipamento é rejeitado	OK	Equipamentos não podem ser excluídos (histórico preservado).
+RF06	Excluir inspeção é rejeitado	OK	Inspeções não podem ser excluídas (histórico preservado).
+RF06	Alterar historico_equipamento é rejeitado	OK	historico_equipamento é somente inserção.
+RF06	Excluir historico_equipamento é rejeitado	OK	historico_equipamento é somente inserção.
+RF06	Alterar historico_inspecao é rejeitado	OK	historico_inspecao é somente inserção.
+RF06	Excluir historico_inspecao é rejeitado	OK	historico_inspecao é somente inserção.
+RF06	Correção válida gera registro no histórico	OK	Registros: 8 -> 9
+resumo
+30 de 30 testes OK
