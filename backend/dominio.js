@@ -3,6 +3,7 @@ import {
     classificar,
     lerMedicao,
     validarIdEquipamento,
+    validarVersoes,
     conferirAutor,
     atualizarStatus,
     recusarExclusao,
@@ -46,7 +47,7 @@ export function criarSistema({ popularExemplo: popular = false } = {}) {
         const { idEquipamento, versaoFirmware, versaoSoftware, cadastradoPor } = corpo;
 
         validarIdEquipamento(idEquipamento);
-        if (!versaoFirmware?.trim() || !versaoSoftware?.trim()) throw new ErroNegocio(400, "As versões são obrigatórias.");
+        const { firmware, software } = validarVersoes(versaoFirmware, versaoSoftware);
         if (!cadastradoPor?.trim()) throw new ErroNegocio(400, "Informe quem está cadastrando.");
         if (equipamentos.some((e) => e.idEquipamento === idEquipamento)) {
             throw new ErroNegocio(409, `Já existe um equipamento com o ID ${idEquipamento}.`);
@@ -54,8 +55,8 @@ export function criarSistema({ popularExemplo: popular = false } = {}) {
 
         const eq = {
             idEquipamento,
-            versaoFirmware: versaoFirmware.trim(),
-            versaoSoftware: versaoSoftware.trim(),
+            versaoFirmware: firmware,
+            versaoSoftware: software,
             status: "Bloqueado",
             cadastradoPor: cadastradoPor.trim(),
             cadastradoEm: agora(),

@@ -28,10 +28,10 @@ export function validarIdEquipamento(id) {
 
 // RF01 — versões de firmware e software obrigatórias
 export function validarVersoes(firmware, software) {
-    if (!firmware || !firmware.trim() || !software || !software.trim()) {
-        throw new ErroNegocio(400, "As versões são obrigatórias.");
-    }
-    return { firmware: firmware.trim(), software: software.trim() };
+    const fw = firmware?.trim();
+    const sw = software?.trim();
+    if (!fw || !sw) throw new ErroNegocio(400, "As versões são obrigatórias.");
+    return { firmware: fw, software: sw };
 }
 
 // RF05 — responsável e justificativa (mín. 10 caracteres e diferente da anterior)
