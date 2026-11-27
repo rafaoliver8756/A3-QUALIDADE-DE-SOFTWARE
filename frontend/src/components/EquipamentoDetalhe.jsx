@@ -11,6 +11,7 @@ export default function EquipamentoDetalhe({ id, aoMudar }) {
     const [acao, setAcao] = useState(null);
     const [erro, setErro] = useState(null);
     const [sucesso, setSucesso] = useState(null);
+    const [sucessoTipo, setSucessoTipo] = useState("ok"); // "ok" | "aviso"
 
     // busca tudo de uma vez
     async function carregar() {
@@ -33,10 +34,11 @@ export default function EquipamentoDetalhe({ id, aoMudar }) {
     }, [id]);
 
     // depois de qualquer alteração: recarrega aqui e a lista da esquerda
-    async function aoSalvar(mensagem) {
+    async function aoSalvar(mensagem, status) {
         setAcao(null);
         await carregar();
         setSucesso(mensagem);
+        setSucessoTipo(status === "Bloqueado" ? "aviso" : "ok");
         aoMudar();
     }
 
@@ -56,7 +58,7 @@ export default function EquipamentoDetalhe({ id, aoMudar }) {
                 <span className={`status ${equipamento.status}`}>{equipamento.status}</span>
             </div>
 
-            {sucesso && <p className="sucesso">{sucesso}</p>}
+            {sucesso && <p className={sucessoTipo === "aviso" ? "aviso" : "sucesso"}>{sucesso}</p>}
             {erro && <p className="erro">{erro}</p>}
 
             <nav className="abas">

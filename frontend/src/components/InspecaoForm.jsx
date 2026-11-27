@@ -20,7 +20,10 @@ export default function InspecaoForm({ idEquipamento, aoSalvar }) {
                 observacao: form.observacao.trim() || null,
             });
             setForm({ ...form, medicao: "", observacao: "" });
-            aoSalvar(`Inspeção #${inspecao.id} registrada (${inspecao.classificacao}). Status: ${equipamento.status}.`);
+            const statusMsg = equipamento.status === "Apto"
+                ? `Inspeção #${inspecao.id} registrada. Medição ${inspecao.classificacao === "Apto" ? "dentro" : "fora"} da faixa. Equipamento liberado como Apto.`
+                : `Inspeção #${inspecao.id} registrada. Medição ${inspecao.classificacao === "Apto" ? "dentro da faixa, mas aguarda aprovação" : "fora da faixa"}. Equipamento Bloqueado.`;
+            aoSalvar(statusMsg, equipamento.status);
         } catch (err) {
             setErro(err.message);
         }
