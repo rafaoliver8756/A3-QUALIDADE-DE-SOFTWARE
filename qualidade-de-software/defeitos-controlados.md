@@ -2,7 +2,13 @@
 
 ## 1. Objetivo
 
-Demonstrar que a suíte de testes (`sql/06-testes-regras.sql`) é capaz de detectar defeitos reais introduzidos propositalmente no código. Dois defeitos foram inseridos em uma versão separada do backend (branch `defeitos-controlados`, arquivo `backend/regras.js`), testados pelo CI, e depois corrigidos. A versão correta é preservada na branch principal.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:daa80d9b84ee5806ea2841a2494a9d0be20e88d4fe373ec8a5028aa528706071 -->
+
+A suíte de testes Node, executada com `npm test` em `backend/`, detecta os defeitos D01 e D02 introduzidos em `backend/regras.js` na branch `defeitos-controlados`. A versão correta é preservada na branch principal. A suíte `sql/06-testes-regras.sql` fornece evidência separada das regras no MySQL.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 ---
 

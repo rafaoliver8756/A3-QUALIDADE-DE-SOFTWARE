@@ -1,5 +1,5 @@
-Comando: mysql -u root -p < sql/06-testes-regras.sql (após 01 a 05)
-SGBD: MySQL 8.0 · Data: 2026-11-27
+Comando: mysql --batch -u root < sql/06-testes-regras.sql (após 01 a 05)
+SGBD: MySQL 8.0.46 · Data: 2026-11-27
 
 requisito	caso	resultado	detalhe
 RF01	ID repetido é rejeitado	OK	Duplicate entry 'EQP-001' for key 'equipamento.PRIMARY'
@@ -13,7 +13,7 @@ RF03	Medição 9.99 classificada como Bloqueado	OK	Obtido: Bloqueado
 RF03	Medição 10.00 classificada como Apto	OK	Obtido: Apto
 RF03	Medição 20.00 classificada como Apto	OK	Obtido: Apto
 RF03	Medição 20.01 classificada como Bloqueado	OK	Obtido: Bloqueado
-RF03	Classificação não pode ser informada pelo usuário	OK	Unknown prepared statement handler (st) given to DEALLOCATE PREPARE
+RF03	Classificação não pode ser informada pelo usuário	OK	3105: The value specified for generated column 'classificacao' in table 'inspecao' is not allowed.
 RF04	Inspeção não pode nascer aprovada (aprovação é etapa separada)	OK	A inspeção é registrada sem aprovação; aprove depois informando responsavel_alteracao e justificativa_alteracao.
 RF04	Inspeção dentro da faixa sem aprovação não libera	OK	Status: Bloqueado
 RF04	Inspeção dentro da faixa e aprovada libera (Apto)	OK	Status: Apto

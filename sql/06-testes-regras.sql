@@ -1,6 +1,7 @@
 USE equipcheck;
 
 DROP PROCEDURE IF EXISTS sp_espera_erro;
+DROP PROCEDURE IF EXISTS sp_testa_classificacao_gerada;
 
 DELIMITER $$
 
@@ -8,19 +9,59 @@ CREATE PROCEDURE sp_espera_erro(IN p_requisito VARCHAR(10),
                                 IN p_caso      VARCHAR(150),
                                 IN p_sql       TEXT)
 BEGIN
+  DECLARE v_etapa VARCHAR(10) DEFAULT 'PREPARE';
+  DECLARE v_ok BOOLEAN DEFAULT FALSE;
   DECLARE v_msg TEXT DEFAULT NULL;
+  DECLARE v_cond INT;
   DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
-    GET DIAGNOSTICS CONDITION 1 v_msg = MESSAGE_TEXT;
+  BEGIN
+    IF v_msg IS NULL THEN
+      GET STACKED DIAGNOSTICS v_cond = NUMBER;
+      GET STACKED DIAGNOSTICS CONDITION v_cond v_msg = MESSAGE_TEXT;
+      IF v_etapa <> 'EXECUTE' THEN
+        SET v_msg = CONCAT(v_etapa, ': ', v_msg);
+      END IF;
+    END IF;
+    SET v_ok = v_etapa = 'EXECUTE';
+  END;
 
   SET @sql_teste = p_sql;
   PREPARE st FROM @sql_teste;
-  EXECUTE st;
-  DEALLOCATE PREPARE st;
+  IF v_msg IS NULL THEN
+    SET v_etapa = 'EXECUTE';
+    EXECUTE st;
+    SET v_etapa = 'DEALLOCATE';
+    DEALLOCATE PREPARE st;
+  END IF;
 
   INSERT INTO tmp_resultado (requisito, caso, resultado, detalhe)
-  VALUES (p_requisito, p_caso,
-          IF(v_msg IS NULL, 'FALHOU', 'OK'),
+  VALUES (p_requisito, p_caso, IF(v_ok, 'OK', 'FALHOU'),
           COALESCE(v_msg, 'O comando foi aceito, mas deveria ser rejeitado'));
+END$$
+
+CREATE PROCEDURE sp_testa_classificacao_gerada()
+BEGIN
+  DECLARE v_errno INT DEFAULT NULL;
+  DECLARE v_msg TEXT DEFAULT NULL;
+  DECLARE v_cond INT;
+
+  BEGIN
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+      GET STACKED DIAGNOSTICS v_cond = NUMBER;
+      GET STACKED DIAGNOSTICS CONDITION v_cond
+        v_errno = MYSQL_ERRNO, v_msg = MESSAGE_TEXT;
+    END;
+
+    -- INSERT direto: o MySQL também pode rejeitar esta atribuição no PREPARE.
+    INSERT INTO inspecao (id_equipamento, medicao, classificacao, responsavel)
+      VALUES ('EQP-005', 25.00, 'Apto', 'Teste');
+  END;
+
+  INSERT INTO tmp_resultado (requisito, caso, resultado, detalhe)
+  VALUES ('RF03', 'Classificação não pode ser informada pelo usuário',
+          IF(v_errno = 3105, 'OK', 'FALHOU'),  -- ER_NON_DEFAULT_VALUE_FOR_GENERATED_COLUMN
+          COALESCE(CONCAT(v_errno, ': ', v_msg), 'O comando foi aceito, mas deveria ser rejeitado'));
 END$$
 DELIMITER ;
 
@@ -72,8 +113,7 @@ FROM (SELECT medicao, classificacao,
         FROM inspecao
       WHERE id_equipamento = 'EQP-005' AND observacao = 'borda') t;
 
-CALL sp_espera_erro('RF03', 'Classificação não pode ser informada pelo usuário',
-  "INSERT INTO inspecao (id_equipamento, medicao, classificacao, responsavel) VALUES ('EQP-005', 25.00, 'Apto', 'Teste')");
+CALL sp_testa_classificacao_gerada();
 
 
 -- RF04: desbloqueio somente após nova inspeção aprovada
@@ -165,3 +205,4 @@ SELECT CONCAT(SUM(resultado = 'OK'), ' de ', COUNT(*), ' testes OK') AS resumo F
 
 DROP TEMPORARY TABLE tmp_resultado;
 DROP PROCEDURE sp_espera_erro;
+DROP PROCEDURE sp_testa_classificacao_gerada;

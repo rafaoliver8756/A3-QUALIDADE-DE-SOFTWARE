@@ -81,11 +81,17 @@ D02: em `atualizarStatus`, liberar para Apto sem exigir `ultima.aprovada`.
 
 ## 7. Estratégia de execução
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:141933a9ec8dc37a5a485ccfb7c39e760f19b694334521a73003c8bdd3abd2b2 -->
+
 1. `cd backend && npm test` — todos os casos devem passar.
 2. Aplicar D01, executar novamente — CT02 e CT03 falham.
-3. Restaurar a versão correta (ou aplicar só D02) — CT05 falha com D02.
+3. Restaurar a versão correta, aplicar D02 e executar novamente `npm test` — CT05 deve falhar com D02 ativo.
 4. Restaurar a versão correta e executar regressão completa (`npm test`).
 5. Opcional: scripts MySQL na ordem de `docs/modelo-relacional.md` e `sql/06-testes-regras.sql`.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 ## 8. Rastreabilidade resumida
 

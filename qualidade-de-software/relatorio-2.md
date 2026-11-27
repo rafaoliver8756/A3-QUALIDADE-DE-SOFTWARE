@@ -8,16 +8,26 @@ Pergunta central: o aplicativo atende aos requisitos e como os testes demonstram
 
 Os seis requisitos do cenário (RF01 a RF06) estão implementados no backend em memória (`backend/dominio.js` + `backend/regras.js`) e na interface React. Dados são fictícios. Não há serviços externos.
 
-Como executar:
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:4cfb4b469e4384235455acfe1c3a75b67a555c32b03422ff3bc96ee27b0c7b87 -->
+
+No primeiro terminal, a partir da raiz do repositório, inicie o backend e deixe o servidor rodando:
 
 ```text
 cd backend
 node server.js
+```
 
+Abra um segundo terminal na raiz do repositório e inicie o frontend:
+
+```text
 cd frontend
 npm install
 npm run dev
 ```
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 Abrir `http://localhost:5173`.
 
