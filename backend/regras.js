@@ -9,9 +9,8 @@ export class ErroNegocio extends Error {
 }
 
 // RF03 — faixa didática 10.00 a 20.00, inclusive
-// DEFEITO CONTROLADO D01 (limite): ">" e "<" excluem os extremos 10.00 e 20.00
 export function classificar(medicao) {
-    return medicao > 10 && medicao < 20 ? "Apto" : "Bloqueado";
+    return medicao >= 10 && medicao <= 20 ? "Apto" : "Bloqueado";
 }
 
 // RF02 — medição numérica (aceita vírgula)
@@ -38,7 +37,8 @@ export function conferirAutor({ responsavel, justificativa }, anterior) {
 
 // RF04 — fora da faixa ou sem aprovação: Bloqueado; dentro da faixa e aprovada: Apto
 export function atualizarStatus(eq, ultima) {
-    if (!ultima || ultima.classificacao === "Bloqueado" || !ultima.aprovada) eq.status = "Bloqueado";
+    // DEFEITO CONTROLADO D02 (lógica): a condição "!ultima.aprovada" foi removida — libera sem aprovação
+    if (!ultima || ultima.classificacao === "Bloqueado") eq.status = "Bloqueado";
     else eq.status = "Apto";
 }
 
