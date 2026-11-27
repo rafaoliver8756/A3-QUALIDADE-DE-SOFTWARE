@@ -1,0 +1,13 @@
+Comando: cd backend && npm test
+Data: 2026-11-27
+Versão: D02 inserido em regras.js (branch defeitos-controlados, commit 04fb634)
+  atualizarStatus libera Apto sem exigir ultima.aprovada
+
+  ✖ CT05 RF04: inspeção dentro da faixa sem aprovação não libera (1.387124ms)
+  ✖ CT07 RF04: revogar aprovação da última inspeção volta a Bloqueado (0.475403ms)
+  ✖ Integração (RF04): inspeção atualiza o status do equipamento (1.416561ms)
+  ✖ Sistema: cadastrar → inspecionar → aprovar → tentar excluir (RF01, RF04, RF06) (0.344918ms)
+
+ℹ tests 29
+ℹ pass 25
+ℹ fail 4

@@ -2,7 +2,7 @@
 
 ## 1. Objetivo
 
-Demonstrar que a suíte de testes (`sql/06-testes-regras.sql`) é capaz de detectar defeitos reais introduzidos propositalmente no código. Dois defeitos foram inseridos em uma versão separada do backend (`server.js`) e do banco (`sql/02-create-tables.sql`), testados, e depois corrigidos. A versão correta é preservada na branch principal.
+Demonstrar que a suíte de testes (`sql/06-testes-regras.sql`) é capaz de detectar defeitos reais introduzidos propositalmente no código. Dois defeitos foram inseridos em uma versão separada do backend (branch `defeitos-controlados`, arquivo `backend/regras.js`), testados pelo CI, e depois corrigidos. A versão correta é preservada na branch principal.
 
 ---
 
@@ -10,7 +10,7 @@ Demonstrar que a suíte de testes (`sql/06-testes-regras.sql`) é capaz de detec
 
 ### D01 — Defeito de limite (RF03)
 
-**Onde:** `backend/server.js`, função `classificar()`
+**Onde:** `backend/regras.js`, função `classificar()`
 
 **Versão com defeito:**
 ```js
@@ -33,13 +33,12 @@ const classificar = (medicao) => (medicao >= 10 && medicao <= 20 ? "Apto" : "Blo
 
 ### D02 — Defeito de lógica (RF04)
 
-**Onde:** `backend/server.js`, função `atualizarStatus()`
+**Onde:** `backend/regras.js`, função `atualizarStatus()`
 
 **Versão com defeito:**
 ```js
 // DEFEITO D02: remove a verificação de aprovação
-function atualizarStatus(eq) {
-    const ultima = inspecoes.filter((i) => i.idEquipamento === eq.idEquipamento).at(-1);
+export function atualizarStatus(eq, ultima) {
     if (!ultima || ultima.classificacao === "Bloqueado") eq.status = "Bloqueado";
     else eq.status = "Apto"; // libera sem checar se foi aprovada
 }
@@ -47,10 +46,9 @@ function atualizarStatus(eq) {
 
 **Versão correta:**
 ```js
-function atualizarStatus(eq) {
-    const ultima = inspecoes.filter((i) => i.idEquipamento === eq.idEquipamento).at(-1);
-    if (!ultima || ultima.classificacao === "Bloqueado") eq.status = "Bloqueado";
-    else if (ultima.aprovada) eq.status = "Apto";
+export function atualizarStatus(eq, ultima) {
+    if (!ultima || ultima.classificacao === "Bloqueado" || !ultima.aprovada) eq.status = "Bloqueado";
+    else eq.status = "Apto";
 }
 ```
 
@@ -63,6 +61,8 @@ function atualizarStatus(eq) {
 ---
 
 ## 3. TDD aplicado — regra de classificação (RF03)
+
+> As três fases de TDD registradas em commits separados (com CI) usam a regra `validarVersoes` (RF01). Ver `relatorio-2.md`, seção 6.
 
 TDD (Test-Driven Development): escrever o teste antes do código, observar a falha, implementar, observar o sucesso.
 
@@ -93,7 +93,9 @@ Todos os 5 testes passam.
 
 A função já está simples o suficiente. Nenhuma refatoração necessária. Os testes continuam passando.
 
-**Evidência:** o `sql/06-testes-regras.sql` contém os mesmos casos (CT01 a CT04) e retorna `OK` para todos quando executado no MySQL com a versão correta do banco.
+**Evidência:** `backend/testes/tdd-classificar.test.js` e a execução `npm test`. Com D01 ativo, os testes de 10.00 e 20.00 falham (`qualidade-de-software/evidencias/testes-falha-d01.txt`). Na versão correta, todos os testes passam.
+
+A suíte SQL `sql/06-testes-regras.sql` contém os mesmos casos de borda no MySQL.
 
 ---
 
@@ -103,3 +105,4 @@ A função já está simples o suficiente. Nenhuma refatoração necessária. Os
 |---|---|---|---|---|
 | D01 | Limite | CT02, CT03 | 10.00 e 20.00 → Bloqueado | 10.00 e 20.00 → Apto |
 | D02 | Lógica | CT05 | Sem aprovação → Apto | Sem aprovação → Bloqueado |
+| D03 | Lógica (encontrado) | CT07 | Revogar aprovação → Apto | Revogar aprovação → Bloqueado |

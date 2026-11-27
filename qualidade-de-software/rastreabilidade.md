@@ -23,8 +23,12 @@ Tabela que liga cada requisito ao risco relacionado, aos casos de teste que o ve
 
 | Evidência | Onde encontrar |
 |---|---|
-| Casos de teste automatizados | `sql/06-testes-regras.sql` |
-| Resultado esperado de cada teste | `qualidade-de-software/plano-de-testes.md` |
+| Casos de teste automatizados (CI) | `backend/testes/*.test.js` (`npm test`) |
+| Casos de teste no MySQL | `sql/06-testes-regras.sql` |
+| Resultado esperado e obtido | `qualidade-de-software/plano-de-testes.md` e `relatorio-2.md` |
 | Defeitos controlados e TDD | `qualidade-de-software/defeitos-controlados.md` |
+| Execução aprovada / com falha / cobertura | `qualidade-de-software/evidencias/` |
+| CI | `.github/workflows/ci.yml` |
+| Regras no código | `backend/regras.js` |
 | Regras no banco (triggers) | `sql/03-triggers-views.sql` |
 | App demonstrando os requisitos | `backend/server.js` + `frontend/` |

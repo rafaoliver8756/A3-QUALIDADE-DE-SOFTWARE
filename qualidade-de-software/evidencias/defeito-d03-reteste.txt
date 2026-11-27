@@ -1,0 +1,16 @@
+Defeito encontrado pela suíte (não era controlado): D03.
+
+Sintoma: CT07 e o teste de integração RF04 falharam na primeira execução.
+  Esperado: revogar a aprovação da última inspeção volta o status para Bloqueado.
+  Obtido: status permanecia Apto.
+
+Causa: atualizarStatus só atribuía Apto quando aprovada === true e não atribuía
+Bloqueado no caso "dentro da faixa sem aprovação". O status anterior era preservado.
+
+Correção em backend/regras.js:
+  se não houver inspeção, classificação Bloqueado ou não aprovada → Bloqueado
+  senão → Apto
+
+Reteste: CT07 e integração RF04 passaram.
+Regressão: os 26 testes da suíte passaram (testes-aprovados.txt). Nenhum outro
+requisito quebrou.

@@ -1,0 +1,17 @@
+﻿Comando: cd backend && npm test
+Data: 2026-11-27
+Versão: D01 inserido em regras.js
+  classificar = (medicao > 10 && medicao < 20)  // exclui 10.00 e 20.00
+
+Resultado: 26 testes, 19 aprovados, 7 falhas.
+
+Falhas (todas em RF03 / extremos da faixa):
+- CT02: 10.00 esperado Apto, obtido Bloqueado
+- CT03: 20.00 esperado Apto, obtido Bloqueado
+- Caixa-branca ramo TRUE: 10.00 e 20.00
+- Unidade: 10.00 e 20.00
+- TDD: 10.00 deve ser Apto
+- TDD: 20.00 deve ser Apto
+
+Casos inválidos e fora da faixa (CT01, CT04, CT14, CT15) continuaram aprovados.
+A versão correta foi restaurada em seguida (ver testes-aprovados.txt).

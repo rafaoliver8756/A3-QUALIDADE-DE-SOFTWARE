@@ -70,10 +70,17 @@ A MegaCore Labs, de Campinas, desenvolve software embarcado e aplicações de co
 │   ├── as-is.md
 │   ├── as-is-bpmn.png
 │   ├── maturidade.md
-│   └── plano-de-testes.md
-├── backend/                       # API Node.js (complemento opcional)
+│   ├── plano-de-testes.md
+│   ├── relatorio-2.md
+│   ├── defeitos-controlados.md
+│   ├── rastreabilidade.md
+│   └── evidencias/
+├── backend/                       # API Node.js + testes automatizados
+│   ├── regras.js
+│   ├── dominio.js
 │   ├── server.js
-│   └── package.json
+│   ├── package.json
+│   └── testes/
 ├── frontend/                      # Interface React + Vite (complemento opcional)
 │   ├── src/
 │   │   ├── App.jsx
@@ -164,9 +171,19 @@ Diagramas: `docs/caso-de-uso.png`, `docs/der.png` e `docs/modelo-relacional.png`
 | 1 | AS-IS em BPMN | `qualidade-de-software/as-is.md` + `qualidade-de-software/as-is-bpmn.png` |
 | 1 | Maturidade inicial com relação a MPS.BR e CMMI | `qualidade-de-software/maturidade.md` |
 | 2 | Plano de testes, riscos e casos de teste | `qualidade-de-software/plano-de-testes.md` |
+| 2 | Relatório 2 (resultados, TDD, CI) | `qualidade-de-software/relatorio-2.md` |
+
+Testes automatizados do aplicativo (usados no CI):
+
+```bash
+cd backend
+npm test
+```
+
+A cada envio de código, o GitHub Actions (`.github/workflows/ci.yml`) instala as dependências e executa essa suíte.
 
 ## 🛠️ Tecnologias
 
 - **Banco de dados:** MySQL 8.0.16+
-- **Back-end:** JavaScript (Node.js), sem dependências externas
+- **Back-end:** JavaScript (Node.js), sem dependências externas; testes com `node --test`
 - **Interface:** React + Vite

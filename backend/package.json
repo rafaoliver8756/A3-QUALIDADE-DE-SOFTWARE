@@ -4,6 +4,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "start": "node server.js"
+        "start": "node server.js",
+        "test": "node --test testes/caixa-preta.test.js testes/caixa-branca.test.js testes/niveis.test.js testes/tdd-classificar.test.js testes/tdd-validar-versoes.test.js",
+        "test:coverage": "node --test --experimental-test-coverage testes/caixa-preta.test.js testes/caixa-branca.test.js testes/niveis.test.js testes/tdd-classificar.test.js testes/tdd-validar-versoes.test.js"
     }
 }
